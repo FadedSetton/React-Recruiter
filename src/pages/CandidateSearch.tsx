@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { searchGithub } from '../api/API';
+import { searchGithub , searchGithubUser } from '../api/API';
 import { GitHubUser } from '../types/GitHubUser';
 
 const CandidateSearch = () => {
@@ -10,15 +10,24 @@ const CandidateSearch = () => {
   const fetchCandidate = async () => {
     setLoading(true);
     try {
-      const user = await searchGithub();
-      setCandidate(user);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch candidate.');
-    } finally {
-      setLoading(false);
+    const users = await searchGithub();
+    if (!Array.isArray(users) || users.length === 0) {
+      throw new Error('No users returned from GitHub.');
     }
-  };
+
+    const randomUser = users[0]; // grab the first user (or random if you want)
+    const user = await searchGithubUser(randomUser.login);
+
+    setCandidate(user);
+    setError(null);
+  } catch (err) {
+    console.error('Error fetching candidate:', err);
+    setError('Failed to fetch candidate.');
+    setCandidate(null);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleAccept = () => {
     if (candidate) {
