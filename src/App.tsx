@@ -5,8 +5,8 @@ function App() {
   return (
     <>
       <Nav />
-      <main>
-        <Outlet />
+      <main className='main'>
+        <Outlet /> {}
       </main>
     </>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { searchGithub , searchGithubUser } from '../api/API';
-import { GitHubUser } from '../types/GitHubUser';
+import { searchGithub, searchGithubUser } from '../api/API';
+import { GitHubUser } from '../interfaces/Candidate.interface';
 
 const CandidateSearch = () => {
   const [candidate, setCandidate] = useState<GitHubUser | null>(null);
@@ -10,24 +10,22 @@ const CandidateSearch = () => {
   const fetchCandidate = async () => {
     setLoading(true);
     try {
-    const users = await searchGithub();
-    if (!Array.isArray(users) || users.length === 0) {
-      throw new Error('No users returned from GitHub.');
+      const users = await searchGithub();
+      if (!Array.isArray(users) || users.length === 0) {
+        throw new Error('No users returned from GitHub.');
+      }
+
+      const user = await searchGithubUser(users[0].login);
+      setCandidate(user);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching candidate:', err);
+      setError('Failed to fetch candidate.');
+      setCandidate(null);
+    } finally {
+      setLoading(false);
     }
-
-    const randomUser = users[0]; // grab the first user (or random if you want)
-    const user = await searchGithubUser(randomUser.login);
-
-    setCandidate(user);
-    setError(null);
-  } catch (err) {
-    console.error('Error fetching candidate:', err);
-    setError('Failed to fetch candidate.');
-    setCandidate(null);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleAccept = () => {
     if (candidate) {
@@ -46,25 +44,36 @@ const CandidateSearch = () => {
     fetchCandidate();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
-  if (!candidate) return <p>No candidate available.</p>;
-
   return (
-    <div>
-      <img src={candidate.avatar_url} alt={candidate.name} width={100} />
-      <h2>{candidate.name}</h2>
-      <p><strong>Username:</strong> {candidate.login}</p>
-      <p><strong>Location:</strong> {candidate.location}</p>
-      <p><strong>Email:</strong> {candidate.email || 'N/A'}</p>
-      <p><strong>Company:</strong> {candidate.company || 'N/A'}</p>
-      <a href={candidate.html_url} target="_blank" rel="noreferrer">GitHub Profile</a>
-      
-      <div>
-        <button onClick={handleAccept}>+</button>
-        <button onClick={handleReject}>−</button>
-      </div>
-    </div>
+    <>
+      <h1>Candidate Search</h1>
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      {candidate && (
+        <div className="candidate-card">
+          <img src={candidate.avatar_url} alt={candidate.name} />
+          <div className="name-section">
+            {candidate.name}
+            <div className="username">({candidate.login})</div>
+          </div>
+          <p>Location: {candidate.location}</p>
+          <p>
+            Email:{' '}
+            <a href={`mailto:${candidate.email}`} className="nav-link">
+              {candidate.email || 'N/A'}
+            </a>
+          </p>
+          <p>Company: {candidate.company || 'N/A'}</p>
+          <p className="bio">
+            Bio: {candidate.bio || "No bio provided."}
+          </p>
+          <div className="button-row">
+            <button className="reject" onClick={handleReject}>−</button>
+            <button className="accept" onClick={handleAccept}>+</button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

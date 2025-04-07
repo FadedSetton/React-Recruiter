@@ -94,6 +94,66 @@ tbody tr:nth-child(odd) {
   background-color: #333333;
 }
 
+.candidate-card {
+  background-color: #000000dd;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.candidate-card img {
+  border-radius: 1rem;
+  max-width: 150px;
+  height: auto;
+}
+
+.name-section {
+  font-weight: bold;
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}
+
+.username {
+  font-style: italic;
+  font-size: 1rem;
+  color: #aaa;
+}
+
+.bio {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 2rem;
+}
+
+.button-row button {
+  font-size: 2rem;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  color: white;
+  border: none;
+}
+
+.reject {
+  background-color: red;
+}
+
+.accept {
+  background-color: green;
+}
+
+
 .nav {
   display: flex;
   justify-content: flex-start;
